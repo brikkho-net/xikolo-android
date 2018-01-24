@@ -1,0 +1,31 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+flavors = ENV["FLAVORS"].split(',')
+
+platform :android do
+  lane :release do
+    flavors.each { |flavor| public_send :"release_#{flavor}" }
+  end
+
+  flavors.each do |flavor|
+    lane :"release_#{flavor}" do
+      gradle(task: "assemble#{flavor.capitalize}Debug")
+      # supply (
+      #   apk: app/build/outputs/apk/openhpi/release/app-openhpi-release.apk
+      #   # metadata_path
+      #   ...
+      # )
+    end
+  end
+end

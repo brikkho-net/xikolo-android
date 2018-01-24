@@ -1,0 +1,11 @@
+flavors = [:openhpi, :opensap, :openwho, :moochouse]
+
+ENV["FLAVORS"] = flavors.join(',')
+
+json_key_file "" # Path to the json secret file - Follow https://docs.fastlane.tools/actions/supply/#setup to get one
+
+flavors.each do |flavor|
+  for_lane flavor do
+    package_name "de.xikolo.#{flavor}"
+  end
+end
