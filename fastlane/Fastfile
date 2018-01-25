@@ -20,7 +20,11 @@ platform :android do
 
   flavors.each do |flavor|
     lane :"release_#{flavor}" do
-      gradle(task: "assemble#{flavor.capitalize}Debug")
+      gradle(
+        task: 'assemble',
+        flavor: flavor,
+        build_type: 'release'
+      )
       # supply (
       #   apk: app/build/outputs/apk/openhpi/release/app-openhpi-release.apk
       #   # metadata_path

@@ -35,4 +35,6 @@ build/
 
 *.key
 
+report.xml
+
 !gradle-wrapper.jar
