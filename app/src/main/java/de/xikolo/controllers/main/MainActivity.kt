@@ -1,6 +1,9 @@
 package de.xikolo.controllers.main
 
 import android.content.Intent
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
+import android.os.Build
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -21,6 +24,7 @@ import de.xikolo.config.Feature
 import de.xikolo.config.GlideApp
 import de.xikolo.controllers.base.BaseFragment
 import de.xikolo.controllers.base.ViewModelActivity
+import de.xikolo.controllers.course.CourseActivity
 import de.xikolo.controllers.dialogs.CreateTicketDialog
 import de.xikolo.controllers.dialogs.CreateTicketDialogAutoBundle
 import de.xikolo.controllers.downloads.DownloadsActivity
@@ -35,6 +39,7 @@ import de.xikolo.utils.LanalyticsUtil
 import de.xikolo.utils.extensions.checkPlayServicesWithDialog
 import de.xikolo.utils.extensions.getString
 import de.xikolo.viewmodels.main.NavigationViewModel
+import java.util.*
 
 class MainActivity : ViewModelActivity<NavigationViewModel>(), NavigationView.OnNavigationItemSelectedListener, MainActivityCallback {
 
@@ -104,6 +109,13 @@ class MainActivity : ViewModelActivity<NavigationViewModel>(), NavigationView.On
         super.onStart()
 
         updateDrawer()
+        val shortcutManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            getSystemService<ShortcutManager>(ShortcutManager::class.java)
+        } else {
+            null
+        }
+        if (shortcutManager != null)
+            updateShortcuts(shortcutManager)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -331,4 +343,20 @@ class MainActivity : ViewModelActivity<NavigationViewModel>(), NavigationView.On
         }
         return super.onOptionsItemSelected(item)
     }
+
+    fun updateShortcuts(shortcutManager: ShortcutManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            val shortcut = ShortcutInfo.Builder(this, "id1test")
+                .setShortLabel("Settings")
+                .setLongLabel("Open the Settings Overview")
+                .setIntent(Intent(this, SettingsActivity::class.java))
+                .build()
+
+            shortcutManager.dynamicShortcuts = listOf(shortcut)
+
+        }
+    }
+
+
+
 }
