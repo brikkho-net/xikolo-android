@@ -1,7 +1,10 @@
 package de.xikolo.controllers.course
 
 import android.content.Intent
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
@@ -27,6 +30,7 @@ import de.xikolo.controllers.dialogs.*
 import de.xikolo.controllers.helper.CourseArea
 import de.xikolo.controllers.login.LoginActivityAutoBundle
 import de.xikolo.controllers.section.CourseItemsActivityAutoBundle
+import de.xikolo.controllers.settings.SettingsActivity
 import de.xikolo.controllers.webview.WebViewFragmentAutoBundle
 import de.xikolo.extensions.observe
 import de.xikolo.extensions.observeOnce
@@ -105,6 +109,15 @@ class CourseActivity : ViewModelActivity<CourseViewModel>(), UnenrollDialog.List
             enrollButton?.setOnClickListener { enroll() }
         }
         hideEnrollBar()
+
+        val shortcutManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            getSystemService<ShortcutManager>(ShortcutManager::class.java)
+        } else {
+            null
+        }
+        if (shortcutManager != null)
+            updateShortcuts(shortcutManager)
+
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -521,5 +534,30 @@ class CourseActivity : ViewModelActivity<CourseViewModel>(), UnenrollDialog.List
         override fun onTabUnselected(tab: TabLayout.Tab) {}
 
         override fun onTabReselected(tab: TabLayout.Tab) {}
+    }
+
+    private fun updateShortcuts(shortcutManager: ShortcutManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+
+            val intent1 = Intent(applicationContext, SettingsActivity::class.java)
+            intent1.action = Intent.ACTION_VIEW
+
+            val shortcut = ShortcutInfo.Builder(applicationContext, "id1test")
+                .setShortLabel("Settings")
+                .setLongLabel("Open the Settings Overview")
+                .setIntent(intent1)
+                .build()
+
+            val intent2 = CourseActivityAutoBundle.builder().courseId("04a02947-693d-4ffe-91d5-20a934b19a21").build(applicationContext)
+            intent2.action = Intent.ACTION_VIEW
+
+            val shortcut2 = ShortcutInfo.Builder(applicationContext, "id2test")
+                .setShortLabel("Kurse")
+                .setLongLabel("Open the Course Overview")
+                .setIntent(intent2)
+                .build()
+
+            shortcutManager.dynamicShortcuts = listOf(shortcut, shortcut2)
+        }
     }
 }
