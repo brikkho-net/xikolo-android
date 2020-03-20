@@ -42,6 +42,7 @@ import de.xikolo.models.dao.ItemDao
 import de.xikolo.network.jobs.GetItemWithContentJob
 import de.xikolo.network.jobs.base.NetworkCode
 import de.xikolo.network.jobs.base.NetworkStateLiveData
+import de.xikolo.storages.RecentCoursesStorage
 import de.xikolo.utils.DeepLinkingUtil
 import de.xikolo.utils.IdUtil
 import de.xikolo.utils.LanalyticsUtil
@@ -109,6 +110,14 @@ class CourseActivity : ViewModelActivity<CourseViewModel>(), UnenrollDialog.List
             enrollButton?.setOnClickListener { enroll() }
         }
         hideEnrollBar()
+
+        var recentCourses = RecentCoursesStorage()
+
+        recentCourses.addCourse("cb6bbcdf-04e1-4d4e-9f4d-c706cd26129f","Testtitel Corona")
+
+        if (course != null) {
+            recentCourses.addCourse(course!!.id, course!!.title)
+        }
 
         val shortcutManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             getSystemService<ShortcutManager>(ShortcutManager::class.java)
@@ -548,16 +557,21 @@ class CourseActivity : ViewModelActivity<CourseViewModel>(), UnenrollDialog.List
                 .setIntent(intent1)
                 .build()
 
-            val intent2 = CourseActivityAutoBundle.builder().courseId("04a02947-693d-4ffe-91d5-20a934b19a21").build(applicationContext)
-            intent2.action = Intent.ACTION_VIEW
+            shortcutManager.dynamicShortcuts = listOf(shortcut)
+            var recentCourse = RecentCoursesStorage().recentCourses?.first()
 
-            val shortcut2 = ShortcutInfo.Builder(applicationContext, "id2test")
-                .setShortLabel("Kurse")
-                .setLongLabel("Open the Course Overview")
-                .setIntent(intent2)
-                .build()
+            if (recentCourse != null) {
+                val intent2 = CourseActivityAutoBundle.builder().courseId(recentCourse.first).build(applicationContext)
+                intent2.action = Intent.ACTION_VIEW
 
-            shortcutManager.dynamicShortcuts = listOf(shortcut, shortcut2)
+                val shortcut2 = ShortcutInfo.Builder(applicationContext, "id2test")
+                    .setShortLabel(recentCourse.second)
+                    .setLongLabel("Open the Course Overview")
+                    .setIntent(intent2)
+                    .build()
+
+                shortcutManager.dynamicShortcuts = listOf(shortcut, shortcut2)
+            }
         }
     }
 }
