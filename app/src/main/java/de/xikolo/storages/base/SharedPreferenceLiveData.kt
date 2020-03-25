@@ -12,7 +12,7 @@ abstract class SharedPreferenceLiveData<T>(var sharedPrefs: SharedPreferences,
         }
     }
 
-    abstract fun valueFromPreferences(key: String, defValue: Any) : T?
+    abstract fun valueFromPreferences(key: String, defValue: Any): T?
 
     override fun onActive() {
         super.onActive()
@@ -34,7 +34,7 @@ abstract class SharedPreferenceLiveData<T>(var sharedPrefs: SharedPreferences,
         return SharedPreferenceStringLiveData(this, key, defValue)
     }
 
-    fun update(value : T?) {
+    fun update(value: T?) {
         this.value = value
     }
 }

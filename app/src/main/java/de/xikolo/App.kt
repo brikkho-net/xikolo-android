@@ -2,7 +2,6 @@ package de.xikolo
 
 import android.app.Application
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
@@ -13,7 +12,6 @@ import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
 import de.xikolo.config.Config
 import de.xikolo.controllers.course.CourseActivityAutoBundle
-import de.xikolo.extensions.observe
 import de.xikolo.lanalytics.Lanalytics
 import de.xikolo.models.migrate.RealmSchemaMigration
 import de.xikolo.states.ConnectivityStateLiveData
@@ -22,7 +20,6 @@ import de.xikolo.states.LoginStateLiveData
 import de.xikolo.states.PermissionStateLiveData
 import de.xikolo.states.base.LiveDataEvent
 import de.xikolo.storages.RecentCoursesStorage
-import de.xikolo.storages.base.SharedPreferenceLiveData
 import de.xikolo.utils.ClientUtil
 import io.realm.Realm
 import io.realm.RealmConfiguration
