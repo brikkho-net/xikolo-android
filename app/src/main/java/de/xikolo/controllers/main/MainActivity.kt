@@ -24,11 +24,8 @@ import de.xikolo.R
 import de.xikolo.config.Config
 import de.xikolo.config.Feature
 import de.xikolo.config.GlideApp
-import de.xikolo.controllers.announcement.AnnouncementActivity
 import de.xikolo.controllers.base.BaseFragment
 import de.xikolo.controllers.base.ViewModelActivity
-import de.xikolo.controllers.course.CourseActivity
-import de.xikolo.controllers.course.CourseActivityAutoBundle
 import de.xikolo.controllers.dialogs.CreateTicketDialog
 import de.xikolo.controllers.dialogs.CreateTicketDialogAutoBundle
 import de.xikolo.controllers.downloads.DownloadsActivity
@@ -43,7 +40,6 @@ import de.xikolo.utils.LanalyticsUtil
 import de.xikolo.utils.extensions.checkPlayServicesWithDialog
 import de.xikolo.utils.extensions.getString
 import de.xikolo.viewmodels.main.NavigationViewModel
-import java.util.*
 
 class MainActivity : ViewModelActivity<NavigationViewModel>(), NavigationView.OnNavigationItemSelectedListener, MainActivityCallback {
 

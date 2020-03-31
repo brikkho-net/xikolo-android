@@ -34,7 +34,7 @@ abstract class SharedPreferenceLiveData<T>(var sharedPrefs: SharedPreferences,
         return SharedPreferenceStringLiveData(this, key, defValue)
     }
 
-    fun update(value: T?) {
-        this.value = value
+    fun update(courses : T?) {
+        this.value = courses
     }
 }

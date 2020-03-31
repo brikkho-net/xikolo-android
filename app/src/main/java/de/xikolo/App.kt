@@ -8,9 +8,11 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.webkit.CookieManager
 import android.webkit.WebView
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
 import de.xikolo.config.Config
+import de.xikolo.config.FeatureConfig
 import de.xikolo.controllers.course.CourseActivityAutoBundle
 import de.xikolo.lanalytics.Lanalytics
 import de.xikolo.models.migrate.RealmSchemaMigration
@@ -71,6 +73,7 @@ class App : Application() {
         instance = this
     }
 
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
     override fun onCreate() {
         super.onCreate()
 
@@ -78,12 +81,9 @@ class App : Application() {
         configureDefaultSettings()
         configureWebView()
 
-        val recentCoursesObserver = Observer<String> {
-            updateShortcuts()
+        if (FeatureConfig.SHORTCUT_ABLE) {
+            configureShortcuts()
         }
-        val recentCourses = RecentCoursesStorage()
-        //who is the owner?
-        recentCourses.coursesLive.observe(this, recentCoursesObserver)
     }
 
     private fun configureRealm() {
@@ -117,29 +117,43 @@ class App : Application() {
         CookieManager.getInstance().flush()
     }
 
-    private fun updateShortcuts() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            val shortcutManager = getSystemService<ShortcutManager>(ShortcutManager::class.java)
-            val recentCourses = RecentCoursesStorage().recentCourses
-            val intentList = mutableListOf<ShortcutInfo>()
 
-            if (recentCourses != null) {
-                for (course in recentCourses) {
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
+    private fun configureShortcuts() {
+        val recentCoursesObserver = Observer<String> {
+            updateShortcuts()
 
-                    val intent = CourseActivityAutoBundle.builder().courseId(course.first).build(applicationContext)
-                    intent.action = Intent.ACTION_VIEW
-
-                    val shortcut = ShortcutInfo.Builder(applicationContext, course.first)
-                        .setShortLabel(course.second)
-                        .setLongLabel("Open the Course Overview")
-                        .setIcon(Icon.createWithResource(applicationContext, R.drawable.ic_launcher_icon))
-                        .setIntent(intent)
-                        .build()
-
-                    intentList.add(shortcut)
-                }
-                shortcutManager.dynamicShortcuts = intentList
-            }
         }
+
+        val recentCourses = RecentCoursesStorage()
+        //who is the owner?
+        recentCourses.coursesLive.observeForever(recentCoursesObserver)
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
+    private fun updateShortcuts() {
+        val shortcutManager = getSystemService<ShortcutManager>(ShortcutManager::class.java)
+        val recentCourses = RecentCoursesStorage().recentCourses
+        val intentList = mutableListOf<ShortcutInfo>()
+
+        for (course in recentCourses) {
+            val courseId = course.first
+            val title = course.second
+
+            val intent = CourseActivityAutoBundle.builder().courseId(courseId).build(applicationContext)
+            intent.action = Intent.ACTION_VIEW
+
+            val shortcut = ShortcutInfo.Builder(applicationContext, courseId)
+                .setShortLabel(title)
+                .setLongLabel("Open the Course Overview")
+                .setIcon(Icon.createWithResource(applicationContext, R.drawable.ic_shortcut_course))
+                .setIntent(intent)
+                .build()
+
+            intentList.add(shortcut)
+        }
+        shortcutManager.dynamicShortcuts = intentList
+
     }
 }

@@ -8,48 +8,51 @@ import de.xikolo.App
 import de.xikolo.storages.base.BaseStorage
 import de.xikolo.storages.base.SharedPreferenceLiveData
 
+typealias RecentCourse = Pair<String, String>
+
+const val MAX_SHORTCUTS = 3
+
 class RecentCoursesStorage : BaseStorage(PREF_RECENT_COURSES, Context.MODE_PRIVATE) {
 
-    val recentCourses: LinkedHashSet<Pair<String, String>>?
+    val recentCourses: LinkedHashSet<RecentCourse>
         get() {
             val json = getString(PREF_RECENT_COURSES)
-            val type = object : TypeToken<LinkedHashSet<Pair<String, String>>>() {}.type
+            val type = object : TypeToken<LinkedHashSet<RecentCourse>>() {}.type
+            if (json == null || type == null) {
+                return LinkedHashSet<RecentCourse>()
+            }
+            println(json)
             return Gson().fromJson(json, type)
         }
 
-    private val shortcutMax = 3
     val coursesLive: SharedPreferenceLiveData<String> by lazy {
         // what name does the preference have? What is the sharedPref Parameter supposed to do?
-        SharedPreferenceLiveData.SharedPreferenceStringLiveData(PreferenceManager.getDefaultSharedPreferences(App.instance), "recentCourses", "")
+        SharedPreferenceLiveData.SharedPreferenceStringLiveData(PreferenceManager.getDefaultSharedPreferences(App.instance), PREF_RECENT_COURSES, "")
     }
 
     fun addCourse(courseId: String, title: String) {
-        var courses: LinkedHashSet<Pair<String, String>>? = recentCourses
-
-        if (recentCourses == null) {
-            courses = LinkedHashSet<Pair<String, String>>()
-        }
+        val courses: LinkedHashSet<RecentCourse> = recentCourses
 
         when {
-            courses!!.contains(Pair(courseId, title)) -> {
+            courses.contains(Pair(courseId, title)) -> {
                 courses.remove(Pair(courseId, title))
                 courses.add(Pair(courseId, title))
             }
-            courses.size < shortcutMax                -> {
+            courses.size < MAX_SHORTCUTS            -> {
                 courses.add(Pair(courseId, title))
             }
-            courses.size == shortcutMax               -> {
+            courses.size == MAX_SHORTCUTS           -> {
                 courses.remove(courses.last())
                 courses.add(Pair(courseId, title))
             }
         }
 
         putString(PREF_RECENT_COURSES, Gson().toJson(courses))
-        //is this update procedure correct?
+        println(Gson().toJson(courses))
         coursesLive.update(Gson().toJson(courses))
     }
 
     companion object {
-        private const val PREF_RECENT_COURSES = "pref_recent_courses"
+        private const val PREF_RECENT_COURSES = "preference_recent_courses"
     }
 }
