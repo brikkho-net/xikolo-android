@@ -1,14 +1,8 @@
 package de.xikolo.controllers.main
 
 import android.content.Intent
-import android.content.Intent.*
-import android.content.pm.ShortcutInfo
-import android.content.pm.ShortcutManager
-import android.net.Uri
-import android.os.Build
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
@@ -19,9 +13,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import butterknife.BindView
 import com.google.android.material.navigation.NavigationView
 import de.xikolo.App
-import de.xikolo.BuildConfig
 import de.xikolo.R
-import de.xikolo.config.Config
 import de.xikolo.config.Feature
 import de.xikolo.config.GlideApp
 import de.xikolo.controllers.base.BaseFragment

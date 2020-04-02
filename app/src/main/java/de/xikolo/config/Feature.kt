@@ -20,6 +20,10 @@ object Feature {
         Build.VERSION.SDK_INT >= 26 && App.instance.packageManager
             .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
 
+    @JvmField
+    val SHORTCUT =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
+
     fun enabled(name: String): Boolean {
         val context = App.instance
 

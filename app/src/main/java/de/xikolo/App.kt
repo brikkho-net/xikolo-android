@@ -12,7 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
 import de.xikolo.config.Config
-import de.xikolo.config.FeatureConfig
+import de.xikolo.config.Feature
 import de.xikolo.controllers.course.CourseActivityAutoBundle
 import de.xikolo.lanalytics.Lanalytics
 import de.xikolo.models.migrate.RealmSchemaMigration
@@ -81,7 +81,7 @@ class App : Application() {
         configureDefaultSettings()
         configureWebView()
 
-        if (FeatureConfig.SHORTCUT_ABLE) {
+        if (Feature.SHORTCUT) {
             configureShortcuts()
         }
     }
@@ -122,11 +122,9 @@ class App : Application() {
     private fun configureShortcuts() {
         val recentCoursesObserver = Observer<String> {
             updateShortcuts()
-
         }
 
         val recentCourses = RecentCoursesStorage()
-        //who is the owner?
         recentCourses.coursesLive.observeForever(recentCoursesObserver)
     }
 
@@ -146,7 +144,6 @@ class App : Application() {
 
             val shortcut = ShortcutInfo.Builder(applicationContext, courseId)
                 .setShortLabel(title)
-                .setLongLabel("Open the Course Overview")
                 .setIcon(Icon.createWithResource(applicationContext, R.drawable.ic_shortcut_course))
                 .setIntent(intent)
                 .build()
